@@ -12,23 +12,34 @@
           Padding="16,8,16,0"
           AutomationId="JobList_RootGrid">
 
-        <!-- Search Bar with Debounced Keyword Search -->
+        <!-- Search Box with Debounced Keyword Search -->
         <Border Grid.Row="0"
                 Stroke="#E5E7EB"
                 StrokeThickness="1"
                 BackgroundColor="#FFFFFF"
-                Padding="4,2"
+                Padding="12,0"
+                HeightRequest="48"
                 Margin="0,4,0,8"
                 AutomationId="JobList_SearchBorder">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="8" />
+                <RoundRectangle CornerRadius="10" />
             </Border.StrokeShape>
-            <SearchBar Text="{Binding SearchQuery, Mode=TwoWay}"
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalOptions="Center">
+                <Label Grid.Column="0"
+                       Text="🔍"
+                       FontSize="16"
+                       VerticalOptions="Center" />
+                <Entry Grid.Column="1"
+                       Text="{Binding SearchQuery, Mode=TwoWay}"
                        Placeholder="Search by job title, company, or skills..."
                        PlaceholderColor="#9CA3AF"
-                       TextColor="#1F2937"
+                       TextColor="#111827"
                        BackgroundColor="Transparent"
-                       AutomationId="JobList_SearchBar" />
+                       ClearButtonVisibility="WhileEditing"
+                       ReturnType="Search"
+                       VerticalOptions="Center"
+                       AutomationId="JobList_SearchInput" />
+            </Grid>
         </Border>
 
         <!-- Offline Banner (Bonus: Offline viewing support) -->
