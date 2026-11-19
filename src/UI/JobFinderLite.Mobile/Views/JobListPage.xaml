@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:JobFinderLite.Application.ViewModels;assembly=JobFinderLite.Application"
+             xmlns:controls="clr-namespace:JobFinderLite.Mobile.Controls"
+             x:Class="JobFinderLite.Mobile.Views.JobListPage"
+             x:DataType="vm:JobListViewModel"
+             Title="JobFinder Lite"
+             BackgroundColor="#F9FAFB">
+
+    <Grid RowDefinitions="Auto,Auto,*"
+          Padding="16,8,16,0"
+          AutomationId="JobList_RootGrid">
+
+        <!-- Search Bar with Debounced Keyword Search -->
+        <Border Grid.Row="0"
+                Stroke="#E5E7EB"
+                StrokeThickness="1"
+                BackgroundColor="#FFFFFF"
+                Padding="4,2"
+                Margin="0,4,0,8"
+                AutomationId="JobList_SearchBorder">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="8" />
+            </Border.StrokeShape>
+            <SearchBar Text="{Binding SearchQuery, Mode=TwoWay}"
+                       Placeholder="Search by job title, company, or skills..."
+                       PlaceholderColor="#9CA3AF"
+                       TextColor="#1F2937"
+                       BackgroundColor="Transparent"
+                       AutomationId="JobList_SearchBar" />
+        </Border>
+
+        <!-- Offline Banner (Bonus: Offline viewing support) -->
+        <Border Grid.Row="1"
+                IsVisible="{Binding IsOffline}"
+                BackgroundColor="#FEF2F2"
+                Stroke="#FCA5A5"
+                StrokeThickness="1"
+                Padding="12,6"
+                Margin="0,0,0,8"
+                AutomationId="JobList_OfflineBanner">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="6" />
+            </Border.StrokeShape>
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                <Label Text="⚠️ Offline Mode:"
+                       FontAttributes="Bold"
+                       FontSize="12"
+                       TextColor="#991B1B" />
+                <Label Text="Showing cached jobs. Pull to refresh when connected."
+                       FontSize="12"
+                       TextColor="#7F1D1D" />
+            </HorizontalStackLayout>
+        </Border>
+
+        <!-- Main Content Area: Loading, Error, Empty, or CollectionView -->
+        <Grid Grid.Row="2">
+
+            <!-- 1. Initial Loading State Indicator -->
+            <VerticalStackLayout IsVisible="{Binding IsBusy}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Spacing="16"
+                                 AutomationId="JobList_LoadingState">
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   Color="#1D4ED8"
+                                   WidthRequest="40"
+                                   HeightRequest="40" />
+                <Label Text="Searching available positions..."
+                       TextColor="#6B7280"
+                       FontSize="14"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <!-- 2. Error State with Retry Button -->
+            <VerticalStackLayout IsVisible="{Binding HasError}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Padding="24"
+                                 Spacing="16"
+                                 AutomationId="JobList_ErrorState">
+                <Label Text="⚠️"
+                       FontSize="48"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Oops! Something went wrong"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       TextColor="#1F2937"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="#6B7280"
+                       FontSize="14"
+                       HorizontalTextAlignment="Center" />
+                <Button Text="Retry Connection"
+                        Command="{Binding RetryCommand}"
+                        BackgroundColor="#1D4ED8"
+                        TextColor="#FFFFFF"
+                        CornerRadius="8"
+                        Padding="24,12"
+                        FontAttributes="Bold"
+                        AutomationId="JobList_RetryButton" />
+            </VerticalStackLayout>
+
+            <!-- 3. Empty Search State -->
+            <VerticalStackLayout IsVisible="{Binding IsEmpty}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Padding="24"
+                                 Spacing="12"
+                                 AutomationId="JobList_EmptyState">
+                <Label Text="🔍"
+                       FontSize="48"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="No jobs found"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       TextColor="#1F2937"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Try adjusting your search terms or keywords to find matching vacancies."
+                       TextColor="#6B7280"
+                       FontSize="14"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <!-- 4. Pull-to-Refresh & Incremental Scrolling CollectionView -->
+            <RefreshView Command="{Binding RefreshCommand}"
+                         IsRefreshing="{Binding IsRefreshing}"
+                         RefreshColor="#1D4ED8"
+                         AutomationId="JobList_RefreshView">
+                <CollectionView ItemsSource="{Binding Jobs}"
+                                RemainingItemsThreshold="4"
+                                RemainingItemsThresholdReachedCommand="{Binding LoadMoreJobsCommand}"
+                                SelectionMode="None"
+                                AutomationId="JobList_CollectionView">
+                    
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:JobCardViewModel">
+                            <controls:JobCardView />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                    <!-- Footer for Infinite Scroll Loading Spinner -->
+                    <CollectionView.Footer>
+                        <Grid Padding="16"
+                              IsVisible="{Binding IsLoadingMore}"
+                              AutomationId="JobList_PagingFooter">
+                            <ActivityIndicator IsRunning="{Binding IsLoadingMore}"
+                                               Color="#1D4ED8"
+                                               WidthRequest="24"
+                                               HeightRequest="24"
+                                               HorizontalOptions="Center" />
+                        </Grid>
+                    </CollectionView.Footer>
+                </CollectionView>
+            </RefreshView>
+
+        </Grid>
+    </Grid>
+</ContentPage>

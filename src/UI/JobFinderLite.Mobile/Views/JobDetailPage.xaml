@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:JobFinderLite.Application.ViewModels;assembly=JobFinderLite.Application"
+             x:Class="JobFinderLite.Mobile.Views.JobDetailPage"
+             x:DataType="vm:JobDetailViewModel"
+             Title="Job Details"
+             BackgroundColor="#F9FAFB">
+
+    <ScrollView AutomationId="JobDetail_ScrollView">
+        <Grid Padding="16" RowSpacing="16" AutomationId="JobDetail_RootGrid">
+
+            <!-- Loading Indicator -->
+            <VerticalStackLayout IsVisible="{Binding IsLoading}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Padding="32"
+                                 Spacing="12"
+                                 AutomationId="JobDetail_LoadingIndicator">
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                   Color="#1D4ED8"
+                                   WidthRequest="36"
+                                   HeightRequest="36" />
+                <Label Text="Loading job details..." TextColor="#6B7280" />
+            </VerticalStackLayout>
+
+            <!-- Error State with Retry -->
+            <VerticalStackLayout IsVisible="{Binding HasError}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Padding="24"
+                                 Spacing="16"
+                                 AutomationId="JobDetail_ErrorLayout">
+                <Label Text="⚠️ Failed to load job"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       TextColor="#DC2626"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="#6B7280"
+                       HorizontalTextAlignment="Center" />
+                <Button Text="Retry"
+                        Command="{Binding LoadJobCommand}"
+                        BackgroundColor="#1D4ED8"
+                        TextColor="White"
+                        CornerRadius="8"
+                        AutomationId="JobDetail_RetryButton" />
+            </VerticalStackLayout>
+
+            <!-- Job Content (Visible when loaded) -->
+            <VerticalStackLayout IsVisible="{Binding Job, Converter={x:Null}}"
+                                 Spacing="16"
+                                 AutomationId="JobDetail_ContentLayout">
+
+                <!-- Header Card -->
+                <Border BackgroundColor="#FFFFFF"
+                        Stroke="#E5E7EB"
+                        StrokeThickness="1"
+                        Padding="16"
+                        AutomationId="JobDetail_HeaderCard">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding Job.Title}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"
+                               AutomationId="JobDetail_Title" />
+
+                        <Label Text="{Binding Job.CompanyLocation}"
+                               FontSize="15"
+                               TextColor="#6B7280"
+                               AutomationId="JobDetail_CompanyLocation" />
+
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                            <Label Grid.Column="0"
+                                   Text="{Binding Job.PayRate}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="#1D4ED8"
+                                   AutomationId="JobDetail_PayRate" />
+
+                            <Label Grid.Column="1"
+                                   Text="{Binding Job.RelativePostedTime}"
+                                   FontSize="13"
+                                   TextColor="#9CA3AF"
+                                   AutomationId="JobDetail_PostedTime" />
+                        </Grid>
+
+                        <HorizontalStackLayout Spacing="8" Margin="0,4,0,0">
+                            <!-- Job Type Pill -->
+                            <Border BackgroundColor="{Binding Job.JobTypeBgHex}"
+                                    StrokeThickness="0"
+                                    Padding="10,4"
+                                    AutomationId="JobDetail_JobTypeChip">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <Label Text="{Binding Job.JobType}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="{Binding Job.JobTypeColorHex}" />
+                            </Border>
+
+                            <!-- Applied Badge if already submitted -->
+                            <Border IsVisible="{Binding HasApplied}"
+                                    BackgroundColor="#E0E7FF"
+                                    StrokeThickness="0"
+                                    Padding="10,4"
+                                    AutomationId="JobDetail_AppliedBadge">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <Label Text="Applied ✓"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="#3730A3" />
+                            </Border>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Description Card -->
+                <Border BackgroundColor="#FFFFFF"
+                        Stroke="#E5E7EB"
+                        StrokeThickness="1"
+                        Padding="16"
+                        AutomationId="JobDetail_DescriptionCard">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Job Description"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937" />
+                        <Label Text="{Binding Job.Description}"
+                               FontSize="14"
+                               TextColor="#4B5563"
+                               LineHeight="1.4"
+                               AutomationId="JobDetail_Description" />
+
+                        <!-- Required Skills Chips -->
+                        <Label Text="Required Skills"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"
+                               Margin="0,8,0,0" />
+
+                        <FlexLayout BindableLayout.ItemsSource="{Binding Job.Skills}"
+                                    Wrap="Wrap"
+                                    AutomationId="JobDetail_SkillsContainer">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border BackgroundColor="#F3F4F6"
+                                            StrokeThickness="0"
+                                            Padding="10,4"
+                                            Margin="0,0,6,6">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding .}"
+                                               FontSize="12"
+                                               TextColor="#374151" />
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Apply Form Card -->
+                <Border BackgroundColor="#FFFFFF"
+                        Stroke="#E5E7EB"
+                        StrokeThickness="1"
+                        Padding="16"
+                        AutomationId="JobDetail_ApplyCard">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Apply for this Position"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937" />
+
+                        <!-- Success Banner when Applied -->
+                        <Border IsVisible="{Binding HasApplied}"
+                                BackgroundColor="#ECFDF5"
+                                Stroke="#A7F3D0"
+                                StrokeThickness="1"
+                                Padding="12"
+                                AutomationId="JobDetail_AppliedBanner">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                <Label Text="✓"
+                                       FontSize="18"
+                                       TextColor="#047857"
+                                       FontAttributes="Bold" />
+                                <Label Text="Application Submitted Successfully!"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="#065F46" />
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Form fields (disabled if already applied) -->
+                        <VerticalStackLayout IsVisible="{Binding HasApplied, Converter={x:Null}}"
+                                             Spacing="12">
+                            <!-- Full Name Field -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Full Name *"
+                                       FontSize="13"
+                                       TextColor="#374151"
+                                       FontAttributes="Bold" />
+                                <Border Stroke="#D1D5DB"
+                                        StrokeThickness="1"
+                                        Padding="10,2"
+                                        BackgroundColor="#FFFFFF">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Entry Text="{Binding FullName, Mode=TwoWay}"
+                                           Placeholder="e.g. Vinod Kumar Yadav"
+                                           PlaceholderColor="#9CA3AF"
+                                           TextColor="#111827"
+                                           AutomationId="JobDetail_FullNameInput" />
+                                </Border>
+                                <Label Text="{Binding FullNameError}"
+                                       IsVisible="{Binding FullNameError, Converter={x:Null}}"
+                                       TextColor="#DC2626"
+                                       FontSize="12" />
+                            </VerticalStackLayout>
+
+                            <!-- Email Field -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Email Address *"
+                                       FontSize="13"
+                                       TextColor="#374151"
+                                       FontAttributes="Bold" />
+                                <Border Stroke="#D1D5DB"
+                                        StrokeThickness="1"
+                                        Padding="10,2"
+                                        BackgroundColor="#FFFFFF">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Entry Text="{Binding Email, Mode=TwoWay}"
+                                           Placeholder="e.g. vinod.yadav@example.com"
+                                           Keyboard="Email"
+                                           PlaceholderColor="#9CA3AF"
+                                           TextColor="#111827"
+                                           AutomationId="JobDetail_EmailInput" />
+                                </Border>
+                                <Label Text="{Binding EmailError}"
+                                       IsVisible="{Binding EmailError, Converter={x:Null}}"
+                                       TextColor="#DC2626"
+                                       FontSize="12" />
+                            </VerticalStackLayout>
+
+                            <!-- Submit Button with Double-Tap Protection & Progress -->
+                            <Button Text="{Binding IsSubmitting, Converter={x:Null}, StringFormat='Apply Now'}"
+                                    Command="{Binding ApplyCommand}"
+                                    IsEnabled="{Binding IsSubmitting, Converter={x:Null}}"
+                                    BackgroundColor="#1D4ED8"
+                                    TextColor="#FFFFFF"
+                                    CornerRadius="8"
+                                    HeightRequest="48"
+                                    FontAttributes="Bold"
+                                    Margin="0,8,0,0"
+                                    AutomationId="JobDetail_ApplyButton">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsSubmitting}" Value="True">
+                                        <Setter Property="Text" Value="Submitting Application..." />
+                                        <Setter Property="Opacity" Value="0.6" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>
