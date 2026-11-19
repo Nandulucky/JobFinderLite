@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Backend/">
+    <Project Path="src/Backend/JobFinderLite.MockApi/JobFinderLite.MockApi.csproj" />
+  </Folder>
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/JobFinderLite.Application/JobFinderLite.Application.csproj" />
+    <Project Path="src/Core/JobFinderLite.Domain/JobFinderLite.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/Infrastructure/JobFinderLite.Infrastructure/JobFinderLite.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/UI/">
+    <Project Path="src/UI/JobFinderLite.Mobile/JobFinderLite.Mobile.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/JobFinderLite.UnitTests/JobFinderLite.UnitTests.csproj" />
+  </Folder>
+</Solution>
