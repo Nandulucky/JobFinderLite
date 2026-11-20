@@ -58,7 +58,7 @@ public static class JobSeeder
             location: "Pune, IN",
             jobType: "Temporary",
             payRate: "₹450 / hour",
-            postedAt: DateTimeOffset.UtcNow.AddDays(-2),
+            postedAt: DateTimeOffset.Parse("2026-11-15T09:30:00Z"),
             description: "We are seeking a reliable Warehouse Associate to join our fast-paced distribution facility in Pune. Key responsibilities include receiving, inspecting, and storing incoming freight, operating order pickers and forklifts safely, preparing shipments according to packing slips, and maintaining clean workstations adhering to standard safety protocols. Great hourly rate with opportunities for overtime and permanent placement.",
             skills: new[] { "Forklift", "Inventory Management", "Safety Compliance" }));
 

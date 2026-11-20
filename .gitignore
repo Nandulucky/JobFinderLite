@@ -12,3 +12,8 @@
 .DS_Store
 Thumbs.db
 .nuget/
+<<<<<<< HEAD
+=======
+Library/
+**/packages/
+>>>>>>> 722eb49 (Initial commit - JobFinderLite project)

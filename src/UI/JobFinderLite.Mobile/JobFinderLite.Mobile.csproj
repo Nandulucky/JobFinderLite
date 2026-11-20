@@ -27,6 +27,9 @@
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
+		<!-- Embed all assemblies inside the APK for standalone execution on Android -->
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+
 		<!-- Display name -->
 		<ApplicationTitle>JobFinderLite.Mobile</ApplicationTitle>
 

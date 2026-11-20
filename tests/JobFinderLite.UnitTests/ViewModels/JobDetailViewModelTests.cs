@@ -155,4 +155,25 @@ public class JobDetailViewModelTests
             It.IsAny<string>(),
             It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
+
+    [Fact]
+    public void FormStateProperties_ReflectSubmissionAndValidationStates()
+    {
+        // Initial state
+        _viewModel.CanApply.Should().BeTrue();
+        _viewModel.ShowApplyForm.Should().BeTrue();
+        _viewModel.HasJobLoaded.Should().BeFalse();
+        _viewModel.HasFullNameError.Should().BeFalse();
+        _viewModel.HasEmailError.Should().BeFalse();
+
+        // Validate empty form -> triggers errors
+        _viewModel.ValidateForm().Should().BeFalse();
+        _viewModel.HasFullNameError.Should().BeTrue();
+        _viewModel.HasEmailError.Should().BeTrue();
+
+        // Simulate applied
+        _viewModel.HasApplied = true;
+        _viewModel.ShowApplyForm.Should().BeFalse();
+        _viewModel.CanApply.Should().BeFalse();
+    }
 }

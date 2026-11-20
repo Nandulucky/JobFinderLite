@@ -6,12 +6,13 @@ using JobFinderLite.Application.Interfaces;
 
 namespace JobFinderLite.Application.ViewModels;
 
-public partial class JobListViewModel : ObservableObject
+public partial class JobListViewModel : ObservableObject, IDisposable
 {
     private readonly IJobsApiClient _apiClient;
     private readonly IJobCacheService _cacheService;
     private readonly IApplicationStateService _stateService;
     private readonly INavigationService _navigationService;
+    private readonly IDispatcherService _dispatcherService;
 
     private const int DefaultPageSize = 20;
     private CancellationTokenSource? _searchCts;
@@ -60,23 +61,36 @@ public partial class JobListViewModel : ObservableObject
         IJobsApiClient apiClient,
         IJobCacheService cacheService,
         IApplicationStateService stateService,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        IDispatcherService? dispatcherService = null)
     {
         _apiClient = apiClient;
         _cacheService = cacheService;
         _stateService = stateService;
         _navigationService = navigationService;
+        _dispatcherService = dispatcherService ?? new DefaultSyncDispatcher();
 
         _stateService.OnJobApplied += HandleJobApplied;
     }
 
     private void HandleJobApplied(string jobId)
     {
-        var existing = Jobs.FirstOrDefault(j => j.Id == jobId);
-        if (existing != null)
+        _dispatcherService.DispatchAsync(() =>
         {
-            existing.IsApplied = true;
-        }
+            var existing = Jobs.FirstOrDefault(j => j.Id == jobId);
+            if (existing != null)
+            {
+                existing.IsApplied = true;
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        _stateService.OnJobApplied -= HandleJobApplied;
+        _searchCts?.Cancel();
+        _searchCts?.Dispose();
+        _searchCts = null;
     }
 
     partial void OnSearchQueryChanged(string value)
@@ -166,14 +180,17 @@ public partial class JobListViewModel : ObservableObject
                 HasMore = result.HasMore;
                 TotalCount = result.TotalCount;
 
-                foreach (var item in result.Items)
+                await _dispatcherService.DispatchAsync(() =>
                 {
-                    // Guard against duplicates
-                    if (!Jobs.Any(x => x.Id == item.Id))
+                    foreach (var item in result.Items)
                     {
-                        Jobs.Add(new JobCardViewModel(item, _stateService, _navigationService));
+                        // Guard against duplicates
+                        if (!Jobs.Any(x => x.Id == item.Id))
+                        {
+                            Jobs.Add(new JobCardViewModel(item, _stateService, _navigationService));
+                        }
                     }
-                }
+                });
             }
             else
             {
@@ -236,7 +253,6 @@ public partial class JobListViewModel : ObservableObject
 
             if (page == 1)
             {
-                Jobs.Clear();
                 // Cache first page for offline viewing (Bonus requirement)
                 if (string.IsNullOrWhiteSpace(SearchQuery) && string.IsNullOrWhiteSpace(LocationQuery))
                 {
@@ -244,15 +260,24 @@ public partial class JobListViewModel : ObservableObject
                 }
             }
 
-            foreach (var item in result.Items)
+            await _dispatcherService.DispatchAsync(() =>
             {
-                if (!Jobs.Any(x => x.Id == item.Id))
+                if (page == 1)
                 {
-                    Jobs.Add(new JobCardViewModel(item, _stateService, _navigationService));
+                    Jobs.Clear();
                 }
-            }
 
-            IsEmpty = Jobs.Count == 0;
+                foreach (var item in result.Items)
+                {
+                    if (!Jobs.Any(x => x.Id == item.Id))
+                    {
+                        Jobs.Add(new JobCardViewModel(item, _stateService, _navigationService));
+                    }
+                }
+
+                IsEmpty = Jobs.Count == 0;
+            });
+
             IsOffline = false;
         }
         catch (OperationCanceledException)
@@ -267,15 +292,19 @@ public partial class JobListViewModel : ObservableObject
                 var cached = await _cacheService.GetCachedFirstPageAsync();
                 if (cached != null && cached.Items.Count > 0)
                 {
-                    Jobs.Clear();
-                    foreach (var item in cached.Items)
+                    await _dispatcherService.DispatchAsync(() =>
                     {
-                        Jobs.Add(new JobCardViewModel(item, _stateService, _navigationService));
-                    }
+                        Jobs.Clear();
+                        foreach (var item in cached.Items)
+                        {
+                            Jobs.Add(new JobCardViewModel(item, _stateService, _navigationService));
+                        }
+                        IsEmpty = false;
+                    });
+
                     TotalCount = cached.TotalCount;
                     HasMore = false;
                     IsOffline = true;
-                    IsEmpty = false;
                     return;
                 }
             }
@@ -284,7 +313,7 @@ public partial class JobListViewModel : ObservableObject
             ErrorMessage = ex.Message.Contains("429")
                 ? "Rate limit exceeded (429). Please wait a moment and tap Retry."
                 : "Unable to load jobs. The server may be busy or Chaos Mode triggered. Tap Retry.";
-            IsEmpty = Jobs.Count == 0;
+            IsEmpty = false;
         }
         finally
         {

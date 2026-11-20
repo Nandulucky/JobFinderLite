@@ -1,4 +1,4 @@
-﻿using JobFinderLite.Application.Interfaces;
+using JobFinderLite.Application.Interfaces;
 using JobFinderLite.Application.ViewModels;
 using JobFinderLite.Infrastructure.Configuration;
 using JobFinderLite.Infrastructure.Services;
@@ -54,6 +54,7 @@ public static class MauiProgram
         });
 
         // 3. Application & Infrastructure Services (Singletons for state and cached lifecycle)
+        builder.Services.AddSingleton<IDispatcherService, MauiDispatcherService>();
         builder.Services.AddSingleton<IJobsApiClient, JobsApiClient>();
         builder.Services.AddSingleton<IJobCacheService, LocalJobCacheService>();
         builder.Services.AddSingleton<IApplicationStateService, InMemoryApplicationStateService>();

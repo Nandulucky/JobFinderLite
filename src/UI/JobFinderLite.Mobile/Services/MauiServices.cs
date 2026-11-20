@@ -41,3 +41,25 @@ public class MauiDialogService : IDialogService
         return false;
     }
 }
+
+public class MauiDispatcherService : IDispatcherService
+{
+    public Task DispatchAsync(Action action)
+    {
+        if (MainThread.IsMainThread)
+        {
+            action();
+            return Task.CompletedTask;
+        }
+        return MainThread.InvokeOnMainThreadAsync(action);
+    }
+
+    public Task<T> DispatchAsync<T>(Func<T> func)
+    {
+        if (MainThread.IsMainThread)
+        {
+            return Task.FromResult(func());
+        }
+        return MainThread.InvokeOnMainThreadAsync(func);
+    }
+}

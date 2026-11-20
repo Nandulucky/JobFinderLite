@@ -31,6 +31,7 @@
 
             <!-- Typography Styles -->
             <Style x:Key="JobTitleStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="OpenSansSemibold" />
                 <Setter Property="FontSize" Value="17" />
                 <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="TextColor" Value="#1F2937" />
@@ -39,6 +40,7 @@
             </Style>
 
             <Style x:Key="CompanyLocationStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="FontAttributes" Value="None" />
                 <Setter Property="TextColor" Value="#6B7280" />
@@ -47,6 +49,7 @@
             </Style>
 
             <Style x:Key="PayRateStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="OpenSansSemibold" />
                 <Setter Property="FontSize" Value="15" />
                 <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="TextColor" Value="#1D4ED8" />
@@ -112,8 +115,6 @@
 
                 <!-- Save / Bookmark Button: 44x44 minimum tap target -->
                 <Button Grid.Column="2"
-                        Text="{Binding IsSaved, Converter={x:Null}, StringFormat=''}"
-                        ImageSource="{Binding IsSaved, Converter={x:Null}}"
                         WidthRequest="44"
                         HeightRequest="44"
                         MinimumWidthRequest="44"
@@ -121,36 +122,20 @@
                         Padding="0"
                         BackgroundColor="Transparent"
                         BorderWidth="0"
+                        FontSize="20"
                         Command="{Binding ToggleSaveCommand}"
                         AutomationId="JobCard_SaveButton">
-                    <Button.Text>
-                        <!-- Dynamic bookmark icon character -->
-                    </Button.Text>
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsSaved}" Value="True">
+                            <Setter Property="Text" Value="★" />
+                            <Setter Property="TextColor" Value="#EAB308" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsSaved}" Value="False">
+                            <Setter Property="Text" Value="☆" />
+                            <Setter Property="TextColor" Value="#9CA3AF" />
+                        </DataTrigger>
+                    </Button.Triggers>
                 </Button>
-                <!-- Visual Bookmark Icon Overlay for 44x44 tap target -->
-                <Grid Grid.Column="2"
-                      WidthRequest="44"
-                      HeightRequest="44"
-                      InputTransparent="True"
-                      HorizontalOptions="Center"
-                      VerticalOptions="Center">
-                    <Label Text="{Binding IsSaved, Converter={x:Null}, StringFormat=''}"
-                           TextColor="{Binding IsSaved, Converter={x:Null}}"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           FontSize="20">
-                        <Label.Triggers>
-                            <DataTrigger TargetType="Label" Binding="{Binding IsSaved}" Value="True">
-                                <Setter Property="Text" Value="★" />
-                                <Setter Property="TextColor" Value="#EAB308" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Label" Binding="{Binding IsSaved}" Value="False">
-                                <Setter Property="Text" Value="☆" />
-                                <Setter Property="TextColor" Value="#9CA3AF" />
-                            </DataTrigger>
-                        </Label.Triggers>
-                    </Label>
-                </Grid>
             </Grid>
 
             <!-- Row 1: Company · Location -->

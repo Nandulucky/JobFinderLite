@@ -83,8 +83,8 @@ graph TD
 | **3.5** | MVVM with CommunityToolkit.Mvvm | Clean MVVM with observable properties, relay commands, zero code-behind logic. | ✅ Complete |
 | **3.5** | Deliberate DI service lifetimes in `MauiProgram` | Singletons for HTTP/APIs/state/cache; Transients for ViewModels and Views. | ✅ Complete |
 | **3.5** | Resilient typed API client with Polly | Retry with exponential backoff for 5xx, dedicated handling for 429 rate limits. | ✅ Complete |
-| **3.5** | Configurable API base URL (Android emulator support) | Dynamic resolution: `http://10.0.2.2:5000/` for Android, `http://localhost:5000/` for iOS/Mac. | ✅ Complete |
-| **3.5** | At least 4 unit tests covering paging, error, idempotent apply | **15 comprehensive unit tests** in `JobFinderLite.UnitTests` passing with 100% success. | ✅ Complete |
+| **3.5** | Configurable API base URL (Android emulator support) | Dynamic resolution: `http://10.0.2.2:5010/` for Android, `http://localhost:5010/` for iOS/Mac. | ✅ Complete |
+| **3.5** | At least 4 unit tests covering paging, error, idempotent apply | **16 comprehensive unit tests** in `JobFinderLite.UnitTests` passing with 100% success. | ✅ Complete |
 | **5.0** | Offline first-page caching (Optional Extra) | First page cached via `IJobCacheService` and loaded seamlessly when offline. | ✅ Complete |
 
 ---
@@ -147,22 +147,23 @@ cd src/Backend/JobFinderLite.MockApi
 dotnet run
 ```
 The API starts listening on:
-- **Localhost / iOS / MacCatalyst:** `http://localhost:5000`
-- **Android Emulator Loopback:** `http://10.0.2.2:5000`
+- **Localhost / iOS / MacCatalyst:** `http://localhost:5010`
+- **Android Emulator Loopback:** `http://10.0.2.2:5010`
+*(Port 5010 is configured to prevent port conflicts with macOS AirPlay Receiver on port 5000).*
 
 #### Verify Endpoints:
-- `curl http://localhost:5000/api/jobs?page=1&pageSize=5`
-- `curl http://localhost:5000/api/jobs/J-1042`
-- Test Chaos Mode toggle: `curl -X POST http://localhost:5000/api/chaos/toggle?enabled=true`
+- `curl http://localhost:5010/api/jobs?page=1&pageSize=5`
+- `curl http://localhost:5010/api/jobs/J-1042`
+- Test Chaos Mode toggle: `curl -X POST http://localhost:5010/api/chaos/toggle?enabled=true`
 
 ### 4.3 Step 2: Run Unit Tests
-To execute all 15 unit tests:
+To execute all 16 unit tests:
 ```bash
 dotnet test tests/JobFinderLite.UnitTests/JobFinderLite.UnitTests.csproj
 ```
 Expected output:
 ```text
-Passed!  - Failed: 0, Passed: 15, Skipped: 0, Total: 15
+Passed!  - Failed: 0, Passed: 16, Skipped: 0, Total: 16
 ```
 
 ### 4.4 Step 3: Launch the .NET MAUI App
@@ -259,3 +260,18 @@ sequenceDiagram
 1. **Automated End-to-End UI Testing:** Implement Appium / MAUI UI tests covering the complete flow from search -> list -> detail -> apply form -> confirmation badge.
 2. **Persistent SQLite / Realm Database:** Replace in-memory cache with an encrypted offline SQLite database using Akavache or EF Core for persistent offline storage.
 3. **Biometric Authentication & Resume Attachment:** Enable biometric login (FaceID / Fingerprint) and multipart/form-data upload for PDF resumes.
+
+---
+
+## 8. Deliverables & Demonstration Artifacts
+
+All requested deliverables have been generated and packaged in the repository:
+
+1. **Working .NET MAUI Solution & Mock API:** Cross-platform on Android and iOS with clean layered architecture.
+2. **README.md:** Architecture documentation, system diagram, scaling strategy, setup instructions, and trade-offs.
+3. **AI_LOG.md:** Detailed log of Copilot and AI prompts, review findings, corrections, and metrics.
+4. **Demonstration Video & Screenshots (with ChaosMode ON):**
+   - **Video Recording:** [android_chaos_mode_demo.mp4](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/recordings/android_chaos_mode_demo.mp4) (shows live Android walkthrough: infinite scroll paging, search debouncing, navigation, and application submission with ChaosMode active).
+   - **Android Job List Screen:** [android_job_list.png](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/screenshots/android_job_list.png)
+   - **Android Job Detail Screen:** [android_job_detail.png](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/screenshots/android_job_detail.png)
+   - **iOS Simulator Screen:** [ios_job_list.png](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/screenshots/ios_job_list.png)

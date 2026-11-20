@@ -32,3 +32,23 @@ public interface IDialogService
     Task DisplayAlertAsync(string title, string message, string cancel);
     Task<bool> DisplayConfirmationAsync(string title, string message, string accept, string cancel);
 }
+
+public interface IDispatcherService
+{
+    Task DispatchAsync(Action action);
+    Task<T> DispatchAsync<T>(Func<T> func);
+}
+
+public class DefaultSyncDispatcher : IDispatcherService
+{
+    public Task DispatchAsync(Action action)
+    {
+        action();
+        return Task.CompletedTask;
+    }
+
+    public Task<T> DispatchAsync<T>(Func<T> func)
+    {
+        return Task.FromResult(func());
+    }
+}

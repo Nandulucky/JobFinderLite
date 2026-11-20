@@ -89,3 +89,17 @@ public class LocalJobCacheService : IJobCacheService
         return Task.CompletedTask;
     }
 }
+
+public class SyncDispatcherService : IDispatcherService
+{
+    public Task DispatchAsync(Action action)
+    {
+        action();
+        return Task.CompletedTask;
+    }
+
+    public Task<T> DispatchAsync<T>(Func<T> func)
+    {
+        return Task.FromResult(func());
+    }
+}

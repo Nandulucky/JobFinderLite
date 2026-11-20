@@ -88,6 +88,14 @@ During architectural code review of the initial AI generation, four key issues w
   - `JobCard_SaveButton`
   - `JobCard_AppliedBadge`
 
+#### 5. Removal of Placeholder Converters & Compiled Bindings Cleanliness
+* **Issue:** AI generated code contained placeholder `Converter={x:Null}` bindings on bookmark toggle buttons and overlay labels, leading to binding failures and runtime warning logs.
+* **Architect Fix:** Replaced with a single declarative `Button` using compiled `DataTrigger` bindings toggling between `★` (gold `#EAB308`) and `☆` (grey `#9CA3AF`), preserving 100% strict compiled binding (`x:DataType`) compatibility.
+
+#### 6. Thread Safety & Memory Leak Prevention
+* **Issue:** Initial search debounce and async fetch updated `ObservableCollection<JobCardViewModel>` from background thread tasks (`Task.Run`), which in MAUI can throw thread marshaling exceptions or cause UI freezes. Furthermore, subscribing transient ViewModels to singleton state service events causes memory retention leaks.
+* **Architect Fix:** Introduced `IDispatcherService` to ensure all UI-bound collection mutations (`Jobs.Clear()`, `Jobs.Add()`) are safely dispatched onto the main UI thread. Implemented `IDisposable` in `JobListViewModel` to properly unsubscribe event handlers and clean up cancellation token sources.
+
 ---
 
 ### 2.5 Time Saved & Productivity Metrics

@@ -1,4 +1,4 @@
-﻿using JobFinderLite.Mobile.Views;
+using JobFinderLite.Mobile.Views;
 
 namespace JobFinderLite.Mobile;
 

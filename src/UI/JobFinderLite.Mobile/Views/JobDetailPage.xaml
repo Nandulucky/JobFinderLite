@@ -48,7 +48,7 @@
             </VerticalStackLayout>
 
             <!-- Job Content (Visible when loaded) -->
-            <VerticalStackLayout IsVisible="{Binding Job, Converter={x:Null}}"
+            <VerticalStackLayout IsVisible="{Binding HasJobLoaded}"
                                  Spacing="16"
                                  AutomationId="JobDetail_ContentLayout">
 
@@ -207,8 +207,8 @@
                             </HorizontalStackLayout>
                         </Border>
 
-                        <!-- Form fields (disabled if already applied) -->
-                        <VerticalStackLayout IsVisible="{Binding HasApplied, Converter={x:Null}}"
+                        <!-- Form fields (hidden when already applied) -->
+                        <VerticalStackLayout IsVisible="{Binding ShowApplyForm}"
                                              Spacing="12">
                             <!-- Full Name Field -->
                             <VerticalStackLayout Spacing="4">
@@ -230,7 +230,7 @@
                                            AutomationId="JobDetail_FullNameInput" />
                                 </Border>
                                 <Label Text="{Binding FullNameError}"
-                                       IsVisible="{Binding FullNameError, Converter={x:Null}}"
+                                       IsVisible="{Binding HasFullNameError}"
                                        TextColor="#DC2626"
                                        FontSize="12" />
                             </VerticalStackLayout>
@@ -256,15 +256,15 @@
                                            AutomationId="JobDetail_EmailInput" />
                                 </Border>
                                 <Label Text="{Binding EmailError}"
-                                       IsVisible="{Binding EmailError, Converter={x:Null}}"
+                                       IsVisible="{Binding HasEmailError}"
                                        TextColor="#DC2626"
                                        FontSize="12" />
                             </VerticalStackLayout>
 
                             <!-- Submit Button with Double-Tap Protection & Progress -->
-                            <Button Text="{Binding IsSubmitting, Converter={x:Null}, StringFormat='Apply Now'}"
+                            <Button Text="Apply Now"
                                     Command="{Binding ApplyCommand}"
-                                    IsEnabled="{Binding IsSubmitting, Converter={x:Null}}"
+                                    IsEnabled="{Binding CanApply}"
                                     BackgroundColor="#1D4ED8"
                                     TextColor="#FFFFFF"
                                     CornerRadius="8"

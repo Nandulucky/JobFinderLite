@@ -21,7 +21,10 @@ public partial class JobDetailViewModel : ObservableObject
     private string _jobId = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasJobLoaded))]
     private JobCardViewModel? _job;
+
+    public bool HasJobLoaded => Job != null;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -40,16 +43,29 @@ public partial class JobDetailViewModel : ObservableObject
     private string _email = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFullNameError))]
     private string? _fullNameError;
 
-    [ObservableProperty]
-    private string? _emailError;
+    public bool HasFullNameError => !string.IsNullOrWhiteSpace(FullNameError);
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasEmailError))]
+    private string? _emailError;
+
+    public bool HasEmailError => !string.IsNullOrWhiteSpace(EmailError);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanApply))]
     private bool _isSubmitting;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowApplyForm))]
+    [NotifyPropertyChangedFor(nameof(CanApply))]
     private bool _hasApplied;
+
+    public bool ShowApplyForm => !HasApplied;
+
+    public bool CanApply => !IsSubmitting && !HasApplied;
 
     [ObservableProperty]
     private string _applicationStatusMessage = string.Empty;
