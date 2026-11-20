@@ -270,8 +270,3 @@ All requested deliverables have been generated and packaged in the repository:
 1. **Working .NET MAUI Solution & Mock API:** Cross-platform on Android and iOS with clean layered architecture.
 2. **README.md:** Architecture documentation, system diagram, scaling strategy, setup instructions, and trade-offs.
 3. **AI_LOG.md:** Detailed log of Copilot and AI prompts, review findings, corrections, and metrics.
-4. **Demonstration Video & Screenshots (with ChaosMode ON):**
-   - **Video Recording:** [android_chaos_mode_demo.mp4](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/recordings/android_chaos_mode_demo.mp4) (shows live Android walkthrough: infinite scroll paging, search debouncing, navigation, and application submission with ChaosMode active).
-   - **Android Job List Screen:** [android_job_list.png](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/screenshots/android_job_list.png)
-   - **Android Job Detail Screen:** [android_job_detail.png](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/screenshots/android_job_detail.png)
-   - **iOS Simulator Screen:** [ios_job_list.png](file:///Users/adduripraveen/.gemini/antigravity/scratch/JobFinderLite/docs/screenshots/ios_job_list.png)
